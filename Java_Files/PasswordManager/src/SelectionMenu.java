@@ -23,13 +23,16 @@ public class SelectionMenu {
     }
 
     public int run() {
-        System.out.println(prompt + "( write " + exitStr + " and press enter to exit menu )");
         while (true) {
             // Print out the menu options
             System.out.print("\033[H\033[2J"); // clear the console
+            System.out.println(prompt + "( write " + exitStr + " and press enter to exit menu )");
+            System.out.println("To navigate the menu, use the up and down arrow keys and immediately press enter\n\n");
             for (int i = 0; i < options.length; i++) {
                 if (i == selectedOptionIndex) {
-                    System.out.println(TerminalUtils.styleString("> " + options[i], hilightColor));
+                    System.out.println("> " + TerminalUtils
+                            .styleString(TerminalUtils.styleString(options[i], hilightColor),
+                                    TerminalUtils.Colors.UNDERLINE));
                 } else {
                     System.out.println("  " + options[i]);
                 }
