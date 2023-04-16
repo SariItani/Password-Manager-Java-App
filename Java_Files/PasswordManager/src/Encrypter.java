@@ -6,28 +6,26 @@ import java.util.logging.LogRecord;
 import java.util.logging.XMLFormatter;
 public class Encrypter
 {  
-    private final static Logger log = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private final static Logger consolelog = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     public void log_message(String message)
     {
-        log.log(Level.INFO, message);
+        consolelog.log(Level.INFO, message);
     }
 
     public static void main(String[] args)
     {
         XMLFormatter xmlFormatter = new XMLFormatter();
         LogRecord logRecord = new LogRecord(Level.INFO, "Logrecord message to be printed in xml file..");
-        FileHandler fileHandler;
+        FileHandler filelog;
         try {
-            fileHandler = new FileHandler("logrecordxml.xml");
-            fileHandler.setFormatter(xmlFormatter);
-            fileHandler.publish(logRecord);
-            fileHandler.flush();
+            filelog = new FileHandler("logrecordxml.xml");
+            filelog.setFormatter(xmlFormatter);
+            filelog.publish(logRecord);
+            filelog.flush();
         } catch (SecurityException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         Encrypter e0 = new Encrypter();
