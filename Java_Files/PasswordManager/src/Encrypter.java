@@ -86,15 +86,29 @@ public class Encrypter
         return new String(decryptedBytes);
     }
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException
+    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, SecurityException, IOException
     {
-        String logRecord, message;
+        String logRecord = "", message = "";
         Encrypter encrypter = new Encrypter();
-        message = "Created the encrypter object";
-        logRecord += message;
+        message = "Created the encrypter object\n";
+        logRecord = logRecord.concat(message);
         encrypter.log_message(message);
+
         encrypter.init();
+        message = "initialized the encrypter\n";
+        logRecord = logRecord.concat(message);
+        encrypter.log_message(message);
+
         String encryptedMessage = encrypter.encrypt("MyFabulousPasswordUncrackableYourMamaIsABanana");
+        message = "Encrypted to : " + encryptedMessage + "\n";
+        logRecord = logRecord.concat(message);
+        encrypter.log_message(message);
+        
         String decryptedMessage = encrypter.decrypt(encryptedMessage);
+        message = "Decrypted to : "+ decryptedMessage + "\n";
+        logRecord = logRecord.concat(message);
+        encrypter.log_message(message);
+
+        encrypter.log_file(logRecord);
     }
 }
