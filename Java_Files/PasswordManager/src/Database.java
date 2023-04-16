@@ -23,7 +23,6 @@ public class Database {
         return temp;
     }
 
-<<<<<<< Updated upstream
     public String[] getPasswords() throws IOException {
         ArrayList<String> passwords_temp = new ArrayList<String>();
         String passwords[] = {};
@@ -41,8 +40,6 @@ public class Database {
 
     }
 
-=======
->>>>>>> Stashed changes
     public void modifyPassword(String oldpassword, String newPassword)
     {
         try {
