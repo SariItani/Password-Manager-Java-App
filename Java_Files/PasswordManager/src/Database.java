@@ -106,4 +106,17 @@ public class Database {
         file.close();
         return match;
     }
+
+    // private static long positionFromDataBase(String filename, String pass) throws IOException {
+    //     RandomAccessFile file = new RandomAccessFile(filename, "r");
+    //     String match = "";
+    //     while (true) {
+    //         match = file.readUTF();
+    //         if (match.equals(pass))
+    //         {
+    //             file.close();
+    //             return file.getFilePointer();
+    //         }
+    //     }
+    // }
 }
