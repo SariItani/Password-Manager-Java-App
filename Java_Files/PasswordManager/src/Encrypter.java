@@ -88,7 +88,7 @@ public class Encrypter
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, SecurityException, IOException
     {
-        String logRecord = "", message = "";
+        String logRecord = "\n", message = "";
         Encrypter encrypter = new Encrypter();
         message = "Created the encrypter object\n";
         logRecord = logRecord.concat(message);
