@@ -1,3 +1,8 @@
-public class Encrypter {
+public class Encrypter
+{
     
+    public static void main(String[] args)
+    {
+        
+    }
 }
