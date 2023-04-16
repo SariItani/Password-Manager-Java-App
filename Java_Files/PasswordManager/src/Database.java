@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 
 public class Database {
 
@@ -20,6 +21,23 @@ public class Database {
             System.out.println("Couldn't get password from database");
         }
         return temp;
+    }
+
+    public String[] getPasswords() throws IOException {
+        ArrayList<String> passwords_temp = new ArrayList<String>();
+        String passwords[] = {};
+        RandomAccessFile file = new RandomAccessFile(DATABASE_NAME, "r");
+        while (true) {
+            try {
+                passwords_temp.add(file.readUTF());
+            } catch (EOFException e) {
+                break;
+            }
+
+        }
+        file.close();
+        return passwords_temp.toArray(passwords);
+
     }
 
     private static void appendToDataBase(String filename, String data)
