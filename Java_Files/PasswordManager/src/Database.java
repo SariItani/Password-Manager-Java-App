@@ -42,13 +42,21 @@ public class Database {
 
     public void modifyPassword(String oldpassword, String newPassword)
     {
-        try {
+        try
+        {
             int passwordPosition = findFromDataBase(DATABASE_NAME, oldpassword);
-            RandomAccessFile file = new RandomAccessFile(DATABASE_NAME, "rw");
-            file.seek((long)passwordPosition);
-            file.writeUTF(newPassword);
-            file.close();
-        } catch (IOException e) {
+            if (passwordPosition>0)
+            {
+                RandomAccessFile file = new RandomAccessFile(DATABASE_NAME, "rw");
+                file.seek((long)passwordPosition);
+                file.writeUTF(newPassword);
+                file.close();
+            }
+            else
+                System.out.println("Couldn't find the password");
+        }
+        catch (IOException e)
+        {
             System.out.println("Couldn't find the password specified.");
         }
     }
