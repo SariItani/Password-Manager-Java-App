@@ -40,6 +40,44 @@ public class Database {
 
     }
 
+    public void modifyPassword(String oldpassword, String newPassword)
+    {
+        try {
+            int passwordPosition = findFromDataBase(DATABASE_NAME, oldpassword);
+            RandomAccessFile file = new RandomAccessFile(DATABASE_NAME, "rw");
+            file.seek((long)passwordPosition);
+            file.writeUTF(newPassword);
+            file.close();
+        } catch (IOException e) {
+            System.out.println("Couldn't find the password specified.");
+        }
+    }
+
+    public void deletePassword(String oldpassword)
+    {
+        modifyPassword(oldpassword, "");
+    }
+
+    private static int findFromDataBase(String filename, String oldpassword)throws IOException
+    {
+        RandomAccessFile file = new RandomAccessFile(filename, "r");
+        ByteArrayOutputStream test = new ByteArrayOutputStream();
+        for (int position = 0; position < file.length(); position++)
+        {
+            for (int batchposition = 0; batchposition < oldpassword.getBytes().length; batchposition++)
+            {
+                test.write(file.read());
+            }
+            if (test.toByteArray() == oldpassword.getBytes())
+                {
+                    file.close();
+                    return position;
+                }
+        }
+        file.close();
+        return -1;
+    }
+
     private static void appendToDataBase(String filename, String data)
             throws IOException {
         RandomAccessFile file = new RandomAccessFile(filename, "rw");
@@ -56,7 +94,6 @@ public class Database {
             match = file.readUTF();
             if (match.equals(pass))
                 break;
-
         }
         file.close();
         return match;
