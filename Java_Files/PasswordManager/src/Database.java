@@ -9,6 +9,7 @@ public class Database {
     // In fact, how about handling exceptions inside the method itself properly?
     // you ever think about that?
     final String DATABASE_NAME = "database.dat";
+    String[] passwords = getPasswordsFromDB();
 
     /*
      * Public

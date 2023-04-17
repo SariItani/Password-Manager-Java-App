@@ -8,9 +8,32 @@ public class SelectionMenu {
     public String hilightColor;
     private int selectedOptionIndex;
 
+    public void setOptions(String[] options) {
+        this.options = options;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
+    /**
+     * Shorthand for setOptions(options) and setPrompt(prompt)
+     */
+    public void setMenu(String[] options, String prompt) {
+        setOptions(options);
+        setPrompt(prompt);
+    }
+
     public SelectionMenu(String[] options) {
         this.options = options;
         this.prompt = "Select an option from the menu below";
+        this.exitStr = "e";
+        this.hilightColor = TerminalUtils.Styles.CYAN;
+    }
+
+    public SelectionMenu(String[] options, String promptString) {
+        this.options = options;
+        this.prompt = promptString;
         this.exitStr = "e";
         this.hilightColor = TerminalUtils.Styles.CYAN;
     }
