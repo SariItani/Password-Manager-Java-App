@@ -2,15 +2,15 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2023-04-16T20:13:01.901958Z</date>
-  <millis>1681675981901</millis>
-  <nanos>958000</nanos>
-  <sequence>4</sequence>
+  <date>2023-04-17T23:04:48.462026Z</date>
+  <millis>1681772688462</millis>
+  <nanos>26000</nanos>
+  <sequence>3</sequence>
   <level>INFO</level>
   <thread>1</thread>
-  <message>Created the encrypter object
-initialized the encrypter
-Encrypted to : XKo7smm3LABhvrW/7zgU3ZtMzElBvwtY96xT2JXQIazvoSwZSojukvpd6UXz9cEOZ3P7uCtIfc06y1uGvWg=
-Decrypted to : MyFabulousPasswordUncrackableYourMamaIsABanana
+  <message>
+Taken a password from user
+Saved MyFabulousPasswordIfYouBreakIBreakYourBack to database as FTDhc2/EoEOXSXfh2lxFtmOprvg3SweEQFJcjiegh+43qcX4cXim9eVBz4TyFl7O5zbIsBj+g7xjJg==
+Deleted MyFabulousPasswordIfYouBreakIBreakYourBack
 </message>
 </record>
