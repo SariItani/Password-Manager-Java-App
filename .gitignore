@@ -1,3 +1,5 @@
 *.dat
 *.jar
 *.class
+*.xml
+*.lck
