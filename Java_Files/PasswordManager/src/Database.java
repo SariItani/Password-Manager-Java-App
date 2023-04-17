@@ -1,122 +1,158 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Database {
-
+    // NOTE :
+    // Public methods may not throw
+    // DO NOT MAKE THEM THROW EXCEPTIONS
+    // In fact, how about handling exceptions inside the method itself properly?
+    // you ever think about that?
     final String DATABASE_NAME = "database.dat";
 
+    /*
+     * Public
+     * Functions
+     * Section
+     */
     public void storetoDB(String encryptedString) {
-        try {
-            appendToDataBase(DATABASE_NAME, encryptedString);
-        } catch (IOException e) {
-            System.out.println("Couldn't store password in database");
-        }
+        appendToDataBase(encryptedString);
     }
 
-    public String getPasswordfromDB(String encryptedString) {
+    public String getPasswordFromDB(String encryptedString) {
         String temp = "";
         try {
-            temp = getFromDataBase(DATABASE_NAME, encryptedString);
+            temp = getFromDataBase(encryptedString);
         } catch (IOException e) {
             System.out.println("Couldn't get password from database");
         }
         return temp;
     }
 
-    public String[] getPasswords() throws IOException {
+    public String[] getPasswordsFromDB() {
         ArrayList<String> passwords_temp = new ArrayList<String>();
         String passwords[] = {};
-        RandomAccessFile file = new RandomAccessFile(DATABASE_NAME, "r");
-        while (true) {
+        RandomAccessFile file = null;
+        file = getAccessFile("rw");
+        while (file != null) {
             try {
                 passwords_temp.add(file.readUTF());
-            } catch (EOFException e) {
+            } catch (IOException e) {
                 break;
             }
-
         }
-        file.close();
         return passwords_temp.toArray(passwords);
 
     }
 
-    public void modifyPassword(String oldpassword, String newPassword)
-    {
-        try
-        {
-            int passwordPosition = findFromDataBase(DATABASE_NAME, oldpassword);
-            if (passwordPosition>0)
-            {
-                RandomAccessFile file = new RandomAccessFile(DATABASE_NAME, "rw");
-                file.seek((long)passwordPosition);
-                file.writeUTF(newPassword);
+    public void modifyPassword(String oldpassword, String newPassword) {
+        deletePassword(oldpassword);
+        appendToDataBase(newPassword);
+    }
+
+    public void deletePassword(String password) {
+        RandomAccessFile file = getAccessFile("w");
+        ArrayList<Byte> bytes = new ArrayList<Byte>();
+        Byte[] bytes_arr = {};
+        try (StringIterator stringIterator = new StringIterator()) {
+            while (stringIterator.hasNext()) {
+                byte[] temp = stringIterator.next().getBytes();
+                if (new String(temp).equals(password))
+                    for (int i = 0; i < temp.length; i++) {
+                        bytes.add(temp[i]);
+                    }
+                file.setLength(0); // delete the contents of the file
+                bytes_arr = bytes.toArray(bytes_arr);
+                for (int i = 0; i < bytes_arr.length; i++)
+                    file.writeByte(bytes_arr[i].byteValue()); // rewrite the bytes into the file, excluding the password
+            }
+        } catch (IOException e) {
+            System.out.println("Couldn't get file length for some reason.");
+        }
+
+    }
+
+    /*
+     * Private
+     * Code
+     * Section
+     */
+
+    private RandomAccessFile getAccessFile(String mode) {
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile(DATABASE_NAME, mode);
+        } catch (FileNotFoundException e) {
+            System.out.println("Couldn't open file");
+        }
+        return file;
+    }
+
+    // custom iterator to make getting strings from classes less annoying
+    private class StringIterator implements Iterator<String>, AutoCloseable {
+        private RandomAccessFile file;
+        private long position;
+        private long length;
+
+        public StringIterator() {
+            try {
+                file = getAccessFile("r");
+                position = 0;
+                length = file.length();
+            } catch (IOException e) {
+                System.out.println("Couldn't construct string iterator.");
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return position < length;
+        }
+
+        @Override
+        public String next() {
+            try {
+                String str = file.readUTF();
+                position = file.getFilePointer();
+                return str;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void close() {
+            try {
                 file.close();
+            } catch (IOException e) {
+                System.out.println("Couldn't close file.");
             }
-            else
-                System.out.println("Couldn't find the password");
-        }
-        catch (IOException e)
-        {
-            System.out.println("Couldn't find the password specified.");
         }
     }
 
-    public void deletePassword(String oldpassword)
-    {
-        modifyPassword(oldpassword, "");
+    private void appendToDataBase(String password) {
+        // append to a dat file
+        RandomAccessFile file = getAccessFile("rw");
+        try {
+            if (file.length() > 0)
+                file.seek(file.length());
+            file.writeUTF(password);
+        } catch (IOException e) {
+            System.out.println("Couldn't add new password.");
+        }
     }
 
-    private static int findFromDataBase(String filename, String oldpassword)throws IOException
-    {
-        RandomAccessFile file = new RandomAccessFile(filename, "r");
-        ByteArrayOutputStream test = new ByteArrayOutputStream();
-        for (int position = 0; position < file.length(); position++)
-        {
-            for (int batchposition = 0; batchposition < oldpassword.getBytes().length; batchposition++)
-            {
-                test.write(file.read());
+    private String getFromDataBase(String pass) throws IOException {
+        // try with resources to automatically close the file
+        try (StringIterator stringIterator = new StringIterator()) {
+            String match = "";
+            while (stringIterator.hasNext()) {
+                match = stringIterator.next();
+                if (match.equals(pass))
+                    break;
             }
-            if (test.toByteArray() == oldpassword.getBytes())
-                {
-                    file.close();
-                    return position;
-                }
+            return match;
         }
-        file.close();
-        return -1;
     }
 
-    private static void appendToDataBase(String filename, String data)
-            throws IOException {
-        RandomAccessFile file = new RandomAccessFile(filename, "rw");
-        if (file.length() > 0)
-            file.seek(file.length()); // append to a dat file
-        file.writeUTF(data);
-        file.close();
-    }
-
-    private static String getFromDataBase(String filename, String pass) throws IOException {
-        RandomAccessFile file = new RandomAccessFile(filename, "r");
-        String match = "";
-        while (true) {
-            match = file.readUTF();
-            if (match.equals(pass))
-                break;
-        }
-        file.close();
-        return match;
-    }
-
-    // private static long positionFromDataBase(String filename, String pass) throws IOException {
-    //     RandomAccessFile file = new RandomAccessFile(filename, "r");
-    //     String match = "";
-    //     while (true) {
-    //         match = file.readUTF();
-    //         if (match.equals(pass))
-    //         {
-    //             file.close();
-    //             return file.getFilePointer();
-    //         }
-    //     }
-    // }
 }
