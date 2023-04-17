@@ -12,7 +12,7 @@ public class SelectionMenu {
         this.options = options;
         this.prompt = "Select an option from the menu below";
         this.exitStr = "e";
-        this.hilightColor = TerminalUtils.Colors.CYAN;
+        this.hilightColor = TerminalUtils.Styles.CYAN;
     }
 
     public SelectionMenu(String[] options, String prompt, String exitStr, String hilightColor) {
@@ -25,14 +25,14 @@ public class SelectionMenu {
     public int run() {
         while (true) {
             // Print out the menu options
-            System.out.print("\033[H\033[2J"); // clear the console
+            System.out.print(TerminalUtils.Styles.CLEAR); // clear the console
             System.out.println(prompt + "( write " + exitStr + " and press enter to exit menu and confirm selection)");
             System.out.println("To navigate the menu, use the up and down arrow keys and immediately press enter\n\n");
             for (int i = 0; i < options.length; i++) {
                 if (i == selectedOptionIndex) {
                     System.out.println("> " + TerminalUtils
                             .styleString(TerminalUtils.styleString(options[i], hilightColor),
-                                    TerminalUtils.Colors.UNDERLINE));
+                                    TerminalUtils.Styles.UNDERLINE));
                 } else {
                     System.out.println("  " + options[i]);
                 }

@@ -14,7 +14,7 @@ public class TerminalUtils {
 
     public static String styleString(String str, String style) {
         // style here is any member of the enum
-        return style + str + Colors.RESET;
+        return style + str + Styles.RESET;
     }
 
     public static void printFile(String fileName) {
@@ -29,7 +29,7 @@ public class TerminalUtils {
 
     }
 
-    public class Colors {
+    public class Styles {
         // Common colors
         public static final String BLACK = "\u001B[30m";
         public static final String RED = "\u001B[31m";
@@ -45,6 +45,7 @@ public class TerminalUtils {
         public static final String BOLD = "\u001B[1m";
         public static final String ITALIC = "\u001B[3m";
         public static final String UNDERLINE = "\u001B[4m";
+        public static final String CLEAR = "\033[H\033[2J";
     }
 
 }

@@ -4,7 +4,7 @@ public class SelectionMenuTest {
 
         String options[] = { "Option1", "Option2", "Option3", "Option4" };
         SelectionMenu s = new SelectionMenu(options, "Select an option from the menu below", "e",
-                TerminalUtils.Colors.CYAN);
+                TerminalUtils.Styles.CYAN);
 
         // note that the selection represents the actual array index of the options
         // array that you specify

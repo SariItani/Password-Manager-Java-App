@@ -51,23 +51,22 @@ public class Database {
     }
 
     public void deletePassword(String password) {
-        RandomAccessFile file = getAccessFile("w");
-        ArrayList<Byte> bytes = new ArrayList<Byte>();
-        Byte[] bytes_arr = {};
+        RandomAccessFile file = getAccessFile("rw");
+        ArrayList<String> strings = new ArrayList<String>();
+        String string_arr[] = {};
+        String currString = "";
         try (StringIterator stringIterator = new StringIterator()) {
             while (stringIterator.hasNext()) {
-                byte[] temp = stringIterator.next().getBytes();
-                if (new String(temp).equals(password))
-                    for (int i = 0; i < temp.length; i++) {
-                        bytes.add(temp[i]);
-                    }
-                file.setLength(0); // delete the contents of the file
-                bytes_arr = bytes.toArray(bytes_arr);
-                for (int i = 0; i < bytes_arr.length; i++)
-                    file.writeByte(bytes_arr[i].byteValue()); // rewrite the bytes into the file, excluding the password
+                currString = stringIterator.next();
+                if (!currString.equals(password))
+                    strings.add(currString);
             }
+            file.setLength(0); // delete the contents of the file
+            string_arr = strings.toArray(string_arr);
+            for (int i = 0; i < string_arr.length; i++)
+                file.writeUTF(string_arr[i]); // rewrite the bytes into the file, excluding the password
         } catch (IOException e) {
-            System.out.println("Couldn't get file length for some reason.");
+            System.out.println("Couldn't get file length.");
         }
 
     }
@@ -91,33 +90,34 @@ public class Database {
     // custom iterator to make getting strings from classes less annoying
     private class StringIterator implements Iterator<String>, AutoCloseable {
         private RandomAccessFile file;
-        private long position;
-        private long length;
+        private String currString;
+
+        public String getCurrString() {
+            return currString;
+        }
+
+        public void advanceCurrString() {
+            try {
+                currString = file.readUTF();
+            } catch (IOException e) {
+                // do nothing when an EOF exception is thrown
+                currString = null;
+            }
+        }
 
         public StringIterator() {
-            try {
-                file = getAccessFile("r");
-                position = 0;
-                length = file.length();
-            } catch (IOException e) {
-                System.out.println("Couldn't construct string iterator.");
-            }
+            file = getAccessFile("r");
         }
 
         @Override
         public boolean hasNext() {
-            return position < length;
+            advanceCurrString();
+            return getCurrString() != null;
         }
 
         @Override
         public String next() {
-            try {
-                String str = file.readUTF();
-                position = file.getFilePointer();
-                return str;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return getCurrString();
         }
 
         @Override

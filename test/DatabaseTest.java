@@ -8,7 +8,7 @@ public class DatabaseTest {
         passwords = db.getPasswordsFromDB();
         for (int i = 0; i < passwords.length; i++)
             System.out.println("The password is : " + passwords[i]);
-        // db.modifyPassword(str, "cock");
         db.deletePassword("asshole");
+        db.modifyPassword(str, "cola");
     }
 }
