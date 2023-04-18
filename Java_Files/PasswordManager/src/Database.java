@@ -1,6 +1,7 @@
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class Database {
     // NOTE :
@@ -9,69 +10,49 @@ public class Database {
     // In fact, how about handling exceptions inside the method itself properly?
     // you ever think about that?
     final String DATABASE_NAME = "database.dat";
-    String[] passwords = getPasswordsFromDB();
+    HashMap<String, String> passwordsMap = getPasswordsFromDB();
 
     /*
      * Public
      * Functions
      * Section
      */
+
+    /**
+     * @param encryptedString : a string with that represents an app and its
+     *                        associated password. (Example :
+     *                        "firefox:somepassword")
+     */
     public void storetoDB(String encryptedString) {
         appendToDataBase(encryptedString);
-        passwords = getPasswordsFromDB();
     }
 
-    public String getPasswordFromDB(String encryptedString) {
-        String temp = "";
-        try {
-            temp = getFromDataBase(encryptedString);
-        } catch (IOException e) {
-            System.out.println("Couldn't get password from database");
-        }
-        return temp;
+    public String getPasswordFromDB(String associatedApp) {
+        return passwordsMap.get(associatedApp);
     }
 
-    public String[] getPasswordsFromDB() {
-        ArrayList<String> passwords_temp = new ArrayList<String>();
-        String passwords[] = {};
-        RandomAccessFile file = null;
-        file = getAccessFile("rw");
-        while (file != null) {
-            try {
-                passwords_temp.add(file.readUTF());
-            } catch (IOException e) {
-                break;
+    public HashMap<String, String> getPasswordsFromDB() {
+        HashMap<String, String> associationsMap = new HashMap<String, String>();
+        String currStringPair[];
+        try (StringIterator stringIterator = new StringIterator()) {
+            while (stringIterator.hasNext()) {
+                currStringPair = stringIterator.next().split(":");
+                associationsMap.put(currStringPair[0], currStringPair[1]);
             }
         }
-        return passwords_temp.toArray(passwords);
+        return associationsMap;
 
     }
 
     public void modifyPassword(String oldpassword, String newPassword) {
-        appendToDataBase(newPassword);
-        deletePassword(oldpassword); // delete password automatically updates the passwords field
+        passwordsMap.replace(oldpassword, newPassword);
+        deserializePasswords();
+
     }
 
     public void deletePassword(String password) {
-        RandomAccessFile file = getAccessFile("rw");
-        ArrayList<String> strings = new ArrayList<String>();
-        String string_arr[] = {};
-        String currString = "";
-        try (StringIterator stringIterator = new StringIterator()) {
-            while (stringIterator.hasNext()) {
-                currString = stringIterator.next();
-                if (!currString.equals(password))
-                    strings.add(currString);
-            }
-            file.setLength(0); // delete the contents of the file
-            string_arr = strings.toArray(string_arr);
-            for (int i = 0; i < string_arr.length; i++)
-                file.writeUTF(string_arr[i]); // rewrite the bytes into the file, excluding the password
-            passwords = getPasswordsFromDB();
-        } catch (IOException e) {
-            System.out.println("Couldn't get file length.");
-        }
-
+        passwordsMap.remove(password);
+        deserializePasswords();
     }
 
     /*
@@ -79,6 +60,18 @@ public class Database {
      * Code
      * Section
      */
+
+    private void deserializePasswords() {
+        RandomAccessFile file = getAccessFile("rw");
+        try {
+            file.setLength(0); // delete all passwords in the file temporarily
+            for (Map.Entry<String, String> entry : passwordsMap.entrySet()) {
+                file.writeUTF(entry.getKey() + ":" + entry.getValue());
+            }
+        } catch (IOException e) {
+            System.out.println("Couldn't delete file contents");
+        }
+    }
 
     private RandomAccessFile getAccessFile(String mode) {
         RandomAccessFile file = null;
@@ -109,7 +102,7 @@ public class Database {
         }
 
         public StringIterator() {
-            file = getAccessFile("r");
+            file = getAccessFile("rw"); // add write mode to create db file if it doesn't already exist.
         }
 
         @Override
@@ -142,19 +135,6 @@ public class Database {
             file.writeUTF(password);
         } catch (IOException e) {
             System.out.println("Couldn't add new password.");
-        }
-    }
-
-    private String getFromDataBase(String pass) throws IOException {
-        // try with resources to automatically close the file
-        try (StringIterator stringIterator = new StringIterator()) {
-            String match = "";
-            while (stringIterator.hasNext()) {
-                match = stringIterator.next();
-                if (match.equals(pass))
-                    break;
-            }
-            return match;
         }
     }
 

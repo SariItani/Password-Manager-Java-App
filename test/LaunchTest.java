@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Scanner;
 
@@ -15,65 +16,72 @@ public class LaunchTest {
         Scanner scan = new Scanner(System.in);
         String password, NewPass;
         SelectionMenu SM = new SelectionMenu(Options, "Select Desired Option", "e", TerminalUtils.Styles.CYAN),
-                passwordSelectionMenu = new SelectionMenu(DB.passwords, "");
+                passwordSelectionMenu = new SelectionMenu(Arrays.copyOf(DB.passwordsMap.keySet().toArray(),
+                        DB.passwordsMap.keySet().toArray().length, String[].class), "");
         int choice = SM.run();
         boolean exit = false;
         while (!exit) {
             choice = SM.run();
-            passwordSelectionMenu.setOptions(DB.passwords);
+            DB.passwordsMap = DB.getPasswordsFromDB();
+            String[] passwordsArr = Arrays.copyOf(DB.passwordsMap.keySet().toArray(),
+                    DB.passwordsMap.keySet().toArray().length, String[].class);
+            passwordSelectionMenu.setOptions(
+                    passwordsArr);
+
+            // check if there are actually any passwords.
+            if (passwordsArr.length == 0 && choice != 0 && choice != 5) {
+                System.out.println("You currently have no saved passwords");
+                Thread.sleep(1500);
+                continue;
+            }
             switch (choice) {
                 // New Pass
+
                 case 0: {
-                    System.out.println("Input Desired Password:");
+                    System.out.println("Which app do you want to associate this password with? : ");
+                    String app = scan.nextLine();
+                    System.out.println("Enter its password : ");
                     password = scan.nextLine();
-                    DB.storetoDB(password);
+                    DB.storetoDB(app + ":" + password);
                     break;
                 }
                 // Copy to Clipboard
                 case 1: {
                     passwordSelectionMenu.setPrompt("Which password do you want to copy?:\n\n");
-                    TerminalUtils.setClipboard(DB.passwords[passwordSelectionMenu.run()]);
-                    System.out.println(TerminalUtils.styleString("Copied 🗸",
+                    TerminalUtils.setClipboard(getOptionsFromMenu(DB, passwordSelectionMenu));
+                    System.out.println(TerminalUtils.styleString("Copied to clipboard 🗸",
                             TerminalUtils.Styles.GREEN + TerminalUtils.Styles.UNDERLINE));
                     Thread.sleep(1500);
                     break;
 
                 }
-                // Modify Pass
+                // Modify Pass (Not working -> depends on delete)
                 case 2: {
-                    if (DB.passwords.length >= 0) {
-                        passwordSelectionMenu.setPrompt("Which password would you like to modify? ");
-                        password = DB.passwords[passwordSelectionMenu.run()];
-                        System.out.println("Give the new password");
-                        NewPass = scan.nextLine().trim();
-                        DB.modifyPassword(password, NewPass);
-                    } else {
-                        System.out.println("You currently have no saved passwords");
-                    }
+                    passwordSelectionMenu.setPrompt("Which password would you like to modify? ");
+                    password = passwordsArr[passwordSelectionMenu.run()];
+                    System.out.println("Give the new password : \n");
+                    NewPass = scan.nextLine().trim();
+                    DB.modifyPassword(password, NewPass);
                     break;
                 }
-                // Delete Pass
+                // Delete Pass ( Not working -> cause of the issue )
                 case 3: {
-                    if (DB.passwords.length >= 0) {
 
-                        System.out.println("Which password would like to delete?:  ");
-                        password = DB.passwords[passwordSelectionMenu.run()];
-                        DB.deletePassword(password);
-                    } else {
-                        System.out.println("You currently have no saved passwords");
-                    }
+                    passwordSelectionMenu.setPrompt("Which password would like to delete?:  ");
+                    password = passwordsArr[passwordSelectionMenu.run()];
+                    DB.deletePassword(password);
                     break;
                 }
                 // List All
                 case 4: {
-                    if (DB.passwords.length > 0) {
 
-                        System.out.println("Your stored passwords are:");
-                        for (int i = 0; i < DB.passwords.length; i++) {
-                            System.out.println(DB.passwords[i]);
-                        }
-                    } else {
-                        System.out.println("You currently have no saved passwords");
+                    System.out.println("Your stored passwords are:");
+                    for (int i = 0; i < passwordsArr.length; i++) {
+                        System.out.println(TerminalUtils.styleString(
+                                passwordsArr[i] + " : " + DB.passwordsMap.get(passwordsArr[i]),
+                                TerminalUtils.Styles.UNDERLINE
+                                        + TerminalUtils.Styles.BLUE));
+                        //
                     }
                     Thread.sleep(1500); // sleep to actually display all the required settings
                     break;
@@ -93,6 +101,12 @@ public class LaunchTest {
 
     private static String getFromBase64(String asciiString) {
         return new String(Base64.getDecoder().decode(asciiString));
+    }
+
+    private static String getOptionsFromMenu(Database DB, SelectionMenu menu) {
+        String[] passwordsArr = Arrays.copyOf(DB.passwordsMap.keySet().toArray(),
+                DB.passwordsMap.keySet().toArray().length, String[].class);
+        return DB.passwordsMap.get(passwordsArr[menu.run()]);
     }
 
     private static void startupSequence() {
