@@ -69,23 +69,20 @@ public class SelectionMenu {
                 break;
             }
             // Handle the input
-            switch (input) {
-                case "\033[A": // up arrow
-                    if (selectedOptionIndex > 0) {
-                        selectedOptionIndex--;
-                    }
-                    break;
-                case "\033[B": // down arrow
-                    if (selectedOptionIndex < options.length - 1) {
-                        selectedOptionIndex++;
-                    }
-                    break;
-                case "\n": // enter key
-                    return selectedOptionIndex;
+            if (input.equals("w")) {
 
-                default:
-                    System.out.println("Invalid input!");
-                    break;
+                if (selectedOptionIndex > 0) {
+                    selectedOptionIndex--;
+                }
+            } else if (input.equals("s")) {
+
+                if (selectedOptionIndex < options.length - 1) {
+                    selectedOptionIndex++;
+                }
+            } else if (input.equals("\n")) {
+                return selectedOptionIndex;
+            } else {
+                System.out.println("Invalid Input!");
             }
         }
         return selectedOptionIndex;
