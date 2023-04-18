@@ -7,11 +7,11 @@ public class LaunchTest {
         final String END = "DQogIF9fX19fX18gXyAgICAgICAgICAgICAgICAgXyAgICAgICAgICAgICAgICAgICAgICAgICAgIF9fICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfICAgICAgICAgICAgICAgICAgXyAgIF8gDQogfF9fICAgX198IHwgICAgICAgICAgICAgICB8IHwgICAgICAgICAgICAgICAgICAgICAgICAgLyBffCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgfCAgICAgICAgICAgICAgICB8IHwgfCB8DQogICAgfCB8ICB8IHxfXyAgIF9fIF8gXyBfXyB8IHwgX18gIF8gICBfICBfX18gIF8gICBfICB8IHxfIF9fXyAgXyBfXyAgIF8gICBfICBfX18gIF8gICBfIF8gX18gIHwgfF8gXyBfXyBfICAgXyBfX198IHxffCB8DQogICAgfCB8ICB8ICdfIFwgLyBfYCB8ICdfIFx8IHwvIC8gfCB8IHwgfC8gXyBcfCB8IHwgfCB8ICBfLyBfIFx8ICdfX3wgfCB8IHwgfC8gXyBcfCB8IHwgfCAnX198IHwgX198ICdfX3wgfCB8IC8gX198IF9ffCB8DQogICAgfCB8ICB8IHwgfCB8IChffCB8IHwgfCB8ICAgPCAgfCB8X3wgfCAoXykgfCB8X3wgfCB8IHx8IChfKSB8IHwgICAgfCB8X3wgfCAoXykgfCB8X3wgfCB8ICAgIHwgfF98IHwgIHwgfF98IFxfXyBcIHxffF98DQogICAgfF98ICB8X3wgfF98XF9fLF98X3wgfF98X3xcX1wgIFxfXywgfFxfX18vIFxfXyxffCB8X3wgXF9fXy98X3wgICAgIFxfXywgfFxfX18vIFxfXyxffF98ICAgICBcX198X3wgICBcX18sX3xfX18vXF9fKF8pDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfXy8gfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfXy8gfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHxfX18vICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHxfX18vICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQo=";
         // startupSequence();
         // sami part:
-        // for now, store unencrypted passwords...
         String Options[] = { "New Password", "Get Specific Password", "Modify Password", "Delete Password",
                 "List All Passwords", "Exit Program" };
         Database DB = new Database();
-        Encrypter encrypter = new Encrypter();
+        // for now, store unencrypted passwords...
+        // Encrypter encrypter = new Encrypter();
         Scanner scan = new Scanner(System.in);
         String password, NewPass;
         SelectionMenu SM = new SelectionMenu(Options, "Select Desired Option", "e", TerminalUtils.Styles.CYAN),
@@ -20,6 +20,7 @@ public class LaunchTest {
         boolean exit = false;
         while (!exit) {
             choice = SM.run();
+            passwordSelectionMenu.setOptions(DB.passwords);
             switch (choice) {
                 // New Pass
                 case 0: {
@@ -31,7 +32,7 @@ public class LaunchTest {
                 // Copy to Clipboard
                 case 1: {
                     passwordSelectionMenu.setPrompt("Which password do you want to copy?:\n\n");
-                    TerminalUtils.setClipboard(DB.getPasswordsFromDB()[passwordSelectionMenu.run()]);
+                    TerminalUtils.setClipboard(DB.passwords[passwordSelectionMenu.run()]);
                     System.out.println(TerminalUtils.styleString("Copied 🗸",
                             TerminalUtils.Styles.GREEN + TerminalUtils.Styles.UNDERLINE));
                     Thread.sleep(1500);
@@ -40,18 +41,27 @@ public class LaunchTest {
                 }
                 // Modify Pass
                 case 2: {
-                    passwordSelectionMenu.setPrompt("Which password would you like to modify? ");
-                    password = DB.getPasswordsFromDB()[passwordSelectionMenu.run()];
-                    System.out.println("Give the new password");
-                    NewPass = scan.nextLine().trim();
-                    DB.modifyPassword(password, NewPass);
+                    if (DB.passwords.length >= 0) {
+                        passwordSelectionMenu.setPrompt("Which password would you like to modify? ");
+                        password = DB.passwords[passwordSelectionMenu.run()];
+                        System.out.println("Give the new password");
+                        NewPass = scan.nextLine().trim();
+                        DB.modifyPassword(password, NewPass);
+                    } else {
+                        System.out.println("You currently have no saved passwords");
+                    }
                     break;
                 }
                 // Delete Pass
                 case 3: {
-                    System.out.println("Which password would like to delete?:  ");
-                    password = DB.getPasswordsFromDB()[passwordSelectionMenu.run()];
-                    DB.deletePassword(password);
+                    if (DB.passwords.length >= 0) {
+
+                        System.out.println("Which password would like to delete?:  ");
+                        password = DB.passwords[passwordSelectionMenu.run()];
+                        DB.deletePassword(password);
+                    } else {
+                        System.out.println("You currently have no saved passwords");
+                    }
                     break;
                 }
                 // List All
@@ -59,8 +69,8 @@ public class LaunchTest {
                     if (DB.passwords.length > 0) {
 
                         System.out.println("Your stored passwords are:");
-                        for (int i = 0; i < DB.getPasswordsFromDB().length; i++) {
-                            System.out.println(DB.getPasswordsFromDB()[i]);
+                        for (int i = 0; i < DB.passwords.length; i++) {
+                            System.out.println(DB.passwords[i]);
                         }
                     } else {
                         System.out.println("You currently have no saved passwords");

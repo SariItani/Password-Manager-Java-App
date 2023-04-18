@@ -18,6 +18,7 @@ public class Database {
      */
     public void storetoDB(String encryptedString) {
         appendToDataBase(encryptedString);
+        passwords = getPasswordsFromDB();
     }
 
     public String getPasswordFromDB(String encryptedString) {
@@ -47,8 +48,8 @@ public class Database {
     }
 
     public void modifyPassword(String oldpassword, String newPassword) {
-        deletePassword(oldpassword);
         appendToDataBase(newPassword);
+        deletePassword(oldpassword); // delete password automatically updates the passwords field
     }
 
     public void deletePassword(String password) {
@@ -66,6 +67,7 @@ public class Database {
             string_arr = strings.toArray(string_arr);
             for (int i = 0; i < string_arr.length; i++)
                 file.writeUTF(string_arr[i]); // rewrite the bytes into the file, excluding the password
+            passwords = getPasswordsFromDB();
         } catch (IOException e) {
             System.out.println("Couldn't get file length.");
         }
