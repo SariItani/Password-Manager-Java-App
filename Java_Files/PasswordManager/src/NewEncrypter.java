@@ -20,7 +20,7 @@ import java.util.Random;
 
 public class NewEncrypter
 {
-    private static final String KEY = "Ommak Kareeme|YA AZ3AARRRR :3";
+    private static final String KEY = "Koossoo";
 
     private static int[] rotator(int key_length, int key_bit_number, int iterations)
     {
