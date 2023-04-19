@@ -92,7 +92,6 @@ public class NewEncrypter
         return n;
     }
     
-
     public static String encrypt(String password)
     {
         // to be used by other methods...
@@ -118,15 +117,5 @@ public class NewEncrypter
     public static String decrypt(String encryptedPassword)
     {
         return encrypt(encryptedPassword);
-    }        
-
-    public static void main(String[] args)
-    {
-        System.err.println();
-        String encrypted = encrypt("Ana bneek manzarak wle er");
-        String decrypted = decrypt(encrypted);
-        System.out.println(decrypted);
-        System.out.println(encrypted);
-        System.err.println();
     }
 }
