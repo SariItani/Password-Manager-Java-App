@@ -136,7 +136,7 @@ public class NewEncrypter
     public static void main(String[] args) {
         String string = "yel3an kosssakk";
         try {
-            ByteBuffer bytes = ByteBuffer.wrap(string.getBytes("utf-8"));
+            ByteBuffer bytes = ByteBuffer.wrap(string.getBytes("UTF-8"));
             // you must specify a charset
             IntBuffer ints = bytes.asIntBuffer();
             int numInts = ints.remaining();
