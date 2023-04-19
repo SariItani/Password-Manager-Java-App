@@ -17,6 +17,7 @@
 // probability is 1 / 2^n+i where i (power rule probability distribution) is the number of flips, so i highly recommend actually flipping more than a bit at each iteration https://www.desmos.com/calculator/pjdqp9v3ig
 
 import java.io.UnsupportedEncodingException;
+import java.text.Format;
 import java.util.Random;
 
 public class NewEncrypter
@@ -128,9 +129,6 @@ public class NewEncrypter
             round = round+key.length;
         }
         // now i have the new toggled key
-        System.out.println(); // test
-        for (int i = 0; i < newKey.length; i++)
-            System.out.print(newKey[i]);
         for (int i = 0; i < newKey.length; i++)
         {
             // bit mask for ascii
@@ -143,10 +141,6 @@ public class NewEncrypter
             }
         }
         // now the key is masked
-        System.out.println();
-        for (int i = 0; i < newKey.length; i++)
-            System.out.print(newKey[i]);
-        // test
         for (int i = 0; i < pass.length; i++)
             newPass[i] = pass[i]^newKey[i];
         // these are the new password bits which will be encoded
@@ -162,22 +156,31 @@ public class NewEncrypter
         String password = "MyFabulousPasswordNobodyDaresToCharm@101HEHE333*2";
         String encoded = encrypt(password);
         String decoded = decrypt(encoded);
-        System.out.println();
-        System.err.println(encoded);
-        System.err.println(decoded);
-
         int[] passBits = encodeString(password), encodedBits=  encodeString(encoded), decodedBits = encodeString(decoded), KEYBits = encodeString(KEY);
+
         System.out.println();
+        System.out.println(String.format("decoded pass bits is %s : %b", decoded, decoded.equals(password)));
+
+        System.out.println();
+        System.out.print("[PassBits]: ");
         for (int i = 0; i < passBits.length; i++)
             System.out.print(passBits[i]);
         System.out.println();
+        System.out.print("[encodedPassBits]: ");
         for (int i = 0; i < encodedBits.length; i++)
             System.out.print(encodedBits[i]);
         System.out.println();
+        System.out.print("[decodedPassBits]: ");
         for (int i = 0; i < decodedBits.length; i++)
             System.out.print(decodedBits[i]);
         System.out.println();
+        System.out.print("[KEYBits]: ");
         for (int i = 0; i < KEYBits.length; i++)
             System.out.print(KEYBits[i]);
+        
+        System.out.println();
+        System.out.println("[The Passowrds]: ");
+        System.err.println(encoded);
+        System.err.println(decoded);
     }
 }
