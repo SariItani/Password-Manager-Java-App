@@ -17,7 +17,6 @@
 // probability is 1 / 2^n+i where i (power rule probability distribution) is the number of flips, so i highly recommend actually flipping more than a bit at each iteration https://www.desmos.com/calculator/pjdqp9v3ig
 
 import java.io.UnsupportedEncodingException;
-import java.text.Format;
 import java.util.Random;
 
 public class NewEncrypter
