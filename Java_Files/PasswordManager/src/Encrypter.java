@@ -1,5 +1,6 @@
 import java.util.logging.Logger;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -14,6 +15,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import java.util.Base64;
 
 public class Encrypter {
@@ -22,9 +25,11 @@ public class Encrypter {
     // Logging:
     private final static Logger consolelog = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private final static XMLFormatter xmlFormatter = new XMLFormatter();
+    private final String logrecord = "\n", message = "";
 
     // Encrypting/Decrypting:
     private SecretKey key;
+    private static final String SECRETKEY = "ESoqSEY/3cASLsXVEAPvsg==";
     private final int KEY_SIZE = 128;
     private final int T_LEN = 128;
     private Cipher encryptionCipher;
@@ -58,6 +63,17 @@ public class Encrypter {
         KeyGenerator generator = KeyGenerator.getInstance("AES");
         generator.init(KEY_SIZE);
         key = generator.generateKey();
+        // decode the base64 encoded string
+        try {
+            String encodedSECRETKEY = new String(SECRETKEY.getBytes(), "UTF-8");
+            byte[] encodedKey = encodedSECRETKEY.getBytes();
+            byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
+            // rebuild key using SecretKeySpec
+            SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+            key = originalKey;
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("Something went wrong getting the key");
+        }
     }
 
     public String encrypt(String message) {
