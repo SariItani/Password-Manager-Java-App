@@ -42,7 +42,7 @@ public class NewEncrypter
         return array[index];
     }
 
-    private static String encodeString(int[] passBits)
+    private static String decodeString(int[] passBits)
     {
         byte[] bytes = new byte[passBits.length / 8];
         for (int i = 0; i < bytes.length; i++) {
@@ -53,7 +53,7 @@ public class NewEncrypter
         return new String(bytes);
     }
 
-    private static int[] decodeString(String password)
+    private static int[] encodeString(String password)
     {
         // gets the integer array of the bits of the passord
         byte[] bytes = password.getBytes();
@@ -96,7 +96,7 @@ public class NewEncrypter
     public static String encrypt(String password)
     {
         // to be used by other methods...
-        int[] pass = decodeString(password), key = decodeString(KEY), newKey = new int[key.length*getMultiple(key.length, pass.length)], newPass = new int[pass.length]; // the new key array length must be a multiple of key length not added with the padding, but the operation must be up till the padded area
+        int[] pass = encodeString(password), key = encodeString(KEY), newKey = new int[key.length*getMultiple(key.length, pass.length)], newPass = new int[pass.length]; // the new key array length must be a multiple of key length not added with the padding, but the operation must be up till the padded area
         int iterations = getMultiple(key.length, pass.length), index, round=0;
         int[] myGears = rotator(KEY.length(), key.length, iterations);
         // now i have the gears to get the shifts i need in the index array
@@ -112,26 +112,13 @@ public class NewEncrypter
         for (int i = 0; i < pass.length; i++)
             newPass[i] = pass[i]^newKey[i];
         // these are the new password bits which will be encoded
-        return encodeString(newPass);
+        return decodeString(newPass);
     }
 
-    public static String decrypt(String encryptedPassword) {
-        int[] encrypted = decodeString(encryptedPassword), key = decodeString(KEY), newKey = new int[key.length*getMultiple(key.length, encrypted.length)];
-        int iterations = getMultiple(key.length, encrypted.length), index, round=0;
-        int[] myGears = rotator(KEY.length(), key.length, iterations);
-        for (int i = 0; i < iterations; i++) {
-            index = getShift(key, myGears[i]);
-            key[index] = not(key[index]);
-            for (int j = 0; j < key.length; j++)
-                newKey[j + round] = key[j];
-            round = round+key.length;
-        }
-        int[] decrypted = new int[encrypted.length];
-        for (int i = 0; i < encrypted.length; i++)
-            decrypted[i] = encrypted[i]^newKey[i];
-        return encodeString(decrypted);
+    public static String decrypt(String encryptedPassword)
+    {
+        return encrypt(encryptedPassword);
     }        
-    
 
     public static void main(String[] args)
     {
@@ -140,5 +127,10 @@ public class NewEncrypter
         String decrypted = decrypt(encrypted);
         System.out.println(decrypted);
         System.out.println(encrypted);
+        
+        String password = "KESS EMMAK YA ALIII ANA 7A NEEK MARTAK WLEEE KOLAYRE";
+        System.out.println(password);
+        System.out.println(encrypt(password));
+        System.out.println(encrypt(encrypt(password)));
     }
 }
