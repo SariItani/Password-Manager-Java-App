@@ -14,7 +14,7 @@ public class KeystrokeDetector {
     private static int originalMode;
 
     public enum KEYS {
-        ARROW_UP, ARROW_DOWN, ENTER
+        ARROW_UP, ARROW_DOWN, ENTER, UNRECOGNIZED
     }
 
     public static KEYS readKey() {
@@ -35,6 +35,9 @@ public class KeystrokeDetector {
                 key = KEYS.ARROW_UP;
             } else if (isDownArrowKeyPressed(numBytes, bytes))
                 key = KEYS.ARROW_DOWN;
+            else
+                key = KEYS.UNRECOGNIZED;
+
             restoreMode();// Restore terminal's default mode
         } catch (IOException e) {
             System.out.println("Couldn't read key from stdin");
@@ -43,15 +46,15 @@ public class KeystrokeDetector {
 
     }
 
-    public static boolean isEnterKeyPressed(int numBytes, byte[] bytes) throws IOException {
+    public static boolean isEnterKeyPressed(int numBytes, byte[] bytes) {
         return numBytes == 1 && bytes[0] == 13;
     }
 
-    public static boolean isUpArrowKeyPressed(int numBytes, byte[] bytes) throws IOException {
+    public static boolean isUpArrowKeyPressed(int numBytes, byte[] bytes) {
         return numBytes == 3 && bytes[0] == 27 && bytes[1] == 91 && bytes[2] == 65;
     }
 
-    public static boolean isDownArrowKeyPressed(int numBytes, byte[] bytes) throws IOException {
+    public static boolean isDownArrowKeyPressed(int numBytes, byte[] bytes) {
         return numBytes == 3 && bytes[0] == 27 && bytes[1] == 91 && bytes[2] == 66;
     }
 

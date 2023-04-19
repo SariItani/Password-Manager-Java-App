@@ -21,7 +21,6 @@ public class TerminalInterface {
         int choice = SM.run();
         boolean exit = false;
         while (!exit) {
-            Thread.sleep(1000); // sleep for 1 second to call process
             choice = SM.run();
             DB.passwordsMap = DB.getPasswordsFromDB();
             String[] passwordsArr = Arrays.copyOf(DB.passwordsMap.keySet().toArray(),
@@ -30,9 +29,9 @@ public class TerminalInterface {
                     passwordsArr);
 
             // check if there are actually any passwords.
-            if (passwordsArr.length == 0 && choice != 0 && choice != 5) {
+            if (passwordsArr == null || passwordsArr.length == 0 && choice != 0 && choice != 5) {
                 System.out.println("You currently have no saved passwords");
-                Thread.sleep(1500);
+                Thread.sleep(500);
                 continue;
             }
             switch (choice) {

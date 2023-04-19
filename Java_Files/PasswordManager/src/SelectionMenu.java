@@ -1,6 +1,4 @@
 
-import java.io.Console;
-
 public class SelectionMenu {
     public String[] options;
     public String prompt;
@@ -70,7 +68,7 @@ public class SelectionMenu {
                     break;
                 case ENTER:
                     return selectedOptionIndex;
-                default:
+                case UNRECOGNIZED:
                     System.out.println("Unrecognized Input!");
                     break;
             }
