@@ -2,6 +2,7 @@
 import java.io.*;
 
 import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.ptr.IntByReference;
 /*
@@ -124,6 +125,8 @@ public class KeystrokeDetectorTest {
         }
         // Get the original console mode
         originalMode = mptr.getValue();
+        mptr.setValue(mptr.getValue() | Kernel32.ENABLE_VIRTUAL_TERMINAL_INPUT); // allow arrow keys to be sent to the
+                                                                                 // stdin.
         kernel32.SetConsoleMode(consoleHandle,
                 mptr.getValue()
                         & ~(Kernel32.ENABLE_LINE_INPUT | Kernel32.ENABLE_ECHO_INPUT | Kernel32.ENABLE_PROCESSED_INPUT));
