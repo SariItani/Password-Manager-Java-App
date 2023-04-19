@@ -121,6 +121,7 @@ public class NewEncrypter
                 newKey[j + round] = key[j];
                 if ((j+round)%8 == 0 && (j+round) <= pass.length-1) // for each MSB in the newKey as long, as we're still concerned with the password bits, do:
                 {
+                    // bit mask for 00H till 7FH
                     int msb = newKey[j+round]^pass[j+round];
                     if (msb == 1)
                         newKey[j+round] = not(newKey[j+round]);
@@ -129,18 +130,6 @@ public class NewEncrypter
             round = round+key.length;
         }
         // now i have the new toggled key
-        for (int i = 0; i < newKey.length; i++)
-        {
-            // bit mask for ascii
-            int j = i%8;
-            if (j == 0)
-            {
-                int msb = newKey[j]^pass[j];
-                if (msb == 1)
-                    newKey[j] = not(newKey[j]);
-            }
-        }
-        // now the key is masked
         for (int i = 0; i < pass.length; i++)
             newPass[i] = pass[i]^newKey[i];
         // these are the new password bits which will be encoded
