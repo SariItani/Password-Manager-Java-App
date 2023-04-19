@@ -16,6 +16,9 @@
 
 // probability is 1 / 2^n+i where i (power rule probability distribution) is the number of flips, so i highly recommend actually flipping more than a bit at each iteration https://www.desmos.com/calculator/pjdqp9v3ig
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Random;
 
 public class NewEncrypter
@@ -40,6 +43,17 @@ public class NewEncrypter
         if (index < 0)
             index += array.length;
         return array[index];
+    }
+
+    private static int[] encoder(String string) throws UnsupportedEncodingException
+    {
+        ByteBuffer bytes = ByteBuffer.wrap(string.getBytes("utf-8"));
+        // you must specify a charset
+        IntBuffer ints = bytes.asIntBuffer();
+        int numInts = ints.remaining();
+        int[] result = new int[numInts];
+        ints.get(result);
+        return result;
     }
 
     private static String decodeString(int[] passBits)
@@ -117,5 +131,22 @@ public class NewEncrypter
     public static String decrypt(String encryptedPassword)
     {
         return encrypt(encryptedPassword);
+    }
+
+    public static void main(String[] args) {
+        String string = "yel3an kosssakk";
+        try {
+            ByteBuffer bytes = ByteBuffer.wrap(string.getBytes("utf-8"));
+            // you must specify a charset
+            IntBuffer ints = bytes.asIntBuffer();
+            int numInts = ints.remaining();
+            int[] result = new int[numInts];
+            ints.get(result);
+            System.out.println(result);
+            System.out.println(decodeString(ints.array()));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace(); // This goes to show that some bytes cannot ge casted to utf-8 charset strings as i expected...
+        }
+        
     }
 }
