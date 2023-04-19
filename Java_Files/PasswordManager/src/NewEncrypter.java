@@ -142,13 +142,13 @@ public class NewEncrypter
     }
 
     public static void main(String[] args) throws UnsupportedEncodingException {
-        String password = "MyFabulousPasswordNobodyDaresToCharm@101HEHE333*2";
+        String password = "i have a neat pass";
         String encoded = encrypt(password);
         String decoded = decrypt(encoded);
         int[] passBits = encodeString(password), encodedBits=  encodeString(encoded), decodedBits = encodeString(decoded), KEYBits = encodeString(KEY);
 
         System.out.println();
-        System.out.println(String.format("decoded pass bits is %s : %b", decoded, decoded.equals(password)));
+        System.out.println(String.format("decoded pass is %s : %b", decoded, decoded.equals(password)));
 
         System.out.println();
         System.out.print("[PassBits]: ");
