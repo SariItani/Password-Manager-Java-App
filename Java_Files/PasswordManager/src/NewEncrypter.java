@@ -20,7 +20,7 @@ import java.util.Random;
 
 public class NewEncrypter
 {
-    private static final String KEY = "Koossoo";
+    private static final String KEY = "Kesseee";
 
     private static int[] rotator(int key_length, int key_bit_number, int iterations)
     {
@@ -123,14 +123,10 @@ public class NewEncrypter
     public static void main(String[] args)
     {
         System.err.println();
-        String encrypted = encrypt("KESS EMMAK YA ALIII ANA 7A NEEK MARTAK WLEEE KOLAYRE");
+        String encrypted = encrypt("Ana bneek manzarak wle er");
         String decrypted = decrypt(encrypted);
         System.out.println(decrypted);
         System.out.println(encrypted);
-        
-        String password = "KESS EMMAK YA ALIII ANA 7A NEEK MARTAK WLEEE KOLAYRE";
-        System.out.println(password);
-        System.out.println(encrypt(password));
-        System.out.println(encrypt(encrypt(password)));
+        System.err.println();
     }
 }
