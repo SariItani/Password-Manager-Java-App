@@ -4,7 +4,6 @@ import java.io.Console;
 public class SelectionMenu {
     public String[] options;
     public String prompt;
-    public String exitStr;
     public String hilightColor;
     private int selectedOptionIndex;
 
@@ -27,21 +26,18 @@ public class SelectionMenu {
     public SelectionMenu(String[] options) {
         this.options = options;
         this.prompt = "Select an option from the menu below";
-        this.exitStr = "e";
         this.hilightColor = TerminalUtils.Styles.CYAN;
     }
 
     public SelectionMenu(String[] options, String promptString) {
         this.options = options;
         this.prompt = promptString;
-        this.exitStr = "e";
         this.hilightColor = TerminalUtils.Styles.CYAN;
     }
 
     public SelectionMenu(String[] options, String prompt, String exitStr, String hilightColor) {
         this.options = options;
         this.prompt = prompt;
-        this.exitStr = exitStr;
         this.hilightColor = hilightColor;
     }
 
@@ -49,8 +45,8 @@ public class SelectionMenu {
         while (true) {
             // Print out the menu options
             System.out.print(TerminalUtils.Styles.CLEAR); // clear the console
-            System.out.println(prompt + "( write " + exitStr + " and press enter to exit menu and confirm selection)");
-            System.out.println("To navigate the menu, use the up and down arrow keys and immediately press enter\n\n");
+            System.out.println(prompt + "(press enter to exit menu and confirm selection)");
+            System.out.println("To navigate the menu, use the up and down arrow keys\n\n");
             for (int i = 0; i < options.length; i++) {
                 if (i == selectedOptionIndex) {
                     System.out.println("> " + TerminalUtils
@@ -61,30 +57,24 @@ public class SelectionMenu {
                 }
             }
 
-            // Read input from the user
-            Console scanner = System.console();
-            String input = new String(scanner.readPassword(""));
+            KeystrokeDetector.KEYS key = KeystrokeDetector.readKey();
+            switch (key) {
+                case ARROW_UP:
+                    if (selectedOptionIndex > 0)
+                        selectedOptionIndex--;
+                    break;
 
-            if (input.equals(exitStr)) {
-                break;
+                case ARROW_DOWN:
+                    if (selectedOptionIndex < options.length - 1)
+                        selectedOptionIndex++;
+                    break;
+                case ENTER:
+                    return selectedOptionIndex;
+                default:
+                    System.out.println("Unrecognized Input!");
+                    break;
             }
-            // Handle the input
-            if (input.equals("w")) {
 
-                if (selectedOptionIndex > 0) {
-                    selectedOptionIndex--;
-                }
-            } else if (input.equals("s")) {
-
-                if (selectedOptionIndex < options.length - 1) {
-                    selectedOptionIndex++;
-                }
-            } else if (input.equals("\n")) {
-                return selectedOptionIndex;
-            } else {
-                System.out.println("Invalid Input!");
-            }
         }
-        return selectedOptionIndex;
     }
 }

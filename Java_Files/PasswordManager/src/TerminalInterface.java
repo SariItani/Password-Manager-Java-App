@@ -21,6 +21,7 @@ public class TerminalInterface {
         int choice = SM.run();
         boolean exit = false;
         while (!exit) {
+            Thread.sleep(1000); // sleep for 1 second to call process
             choice = SM.run();
             DB.passwordsMap = DB.getPasswordsFromDB();
             String[] passwordsArr = Arrays.copyOf(DB.passwordsMap.keySet().toArray(),

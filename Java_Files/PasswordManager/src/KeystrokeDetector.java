@@ -1,8 +1,6 @@
 
-import java.io.*;
-
+import java.io.IOException;
 import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.ptr.IntByReference;
 /*
@@ -11,25 +9,12 @@ import com.sun.jna.ptr.IntByReference;
  * Once this is done, get the integer representation of specific characters.
  */
 
-public class KeystrokeDetectorTest {
+public class KeystrokeDetector {
     private static final int MAX_BYTES = 1024;
     private static int originalMode;
 
     public enum KEYS {
         ARROW_UP, ARROW_DOWN, ENTER
-    }
-
-    public static void main(String[] args) throws IOException {
-        // Listen to user keystrokes
-        KEYS key = null;
-        while (key != KEYS.ENTER) {
-            key = readKey();
-            if (key == KEYS.ARROW_UP)
-                System.out.println("Up arrow pressed!");
-            else if (key == KEYS.ARROW_DOWN)
-                System.out.println("Down arrow pressed!");
-        }
-
     }
 
     public static KEYS readKey() {
@@ -59,30 +44,15 @@ public class KeystrokeDetectorTest {
     }
 
     public static boolean isEnterKeyPressed(int numBytes, byte[] bytes) throws IOException {
-        if (isUnix()) {
-            return numBytes == 1 && bytes[0] == 13;
-        } else if (isWindows()) {
-            return System.console().reader().read() == 13;
-        }
-        return false;
+        return numBytes == 1 && bytes[0] == 13;
     }
 
     public static boolean isUpArrowKeyPressed(int numBytes, byte[] bytes) throws IOException {
-        if (isUnix()) {
-            return numBytes == 3 && bytes[0] == 27 && bytes[1] == 91 && bytes[2] == 65;
-        } else if (isWindows()) {
-            return System.console().reader().read() == 224 && System.console().reader().read() == 72;
-        }
-        return false;
+        return numBytes == 3 && bytes[0] == 27 && bytes[1] == 91 && bytes[2] == 65;
     }
 
     public static boolean isDownArrowKeyPressed(int numBytes, byte[] bytes) throws IOException {
-        if (isUnix()) {
-            return numBytes == 3 && bytes[0] == 27 && bytes[1] == 91 && bytes[2] == 66;
-        } else if (isWindows()) {
-            return System.console().reader().read() == 224 && System.console().reader().read() == 80;
-        }
-        return false;
+        return numBytes == 3 && bytes[0] == 27 && bytes[1] == 91 && bytes[2] == 66;
     }
 
     private static void restoreMode() {
