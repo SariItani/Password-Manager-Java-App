@@ -116,7 +116,15 @@ public class NewEncrypter
             index = getShift(key, myGears[i]);
             key[index] = not(key[index]);
             for (int j = 0; j < key.length; j++)
+            {
                 newKey[j + round] = key[j];
+                if ((j+round)%8 == 0 && (j+round) <= pass.length-1) // for each MSB in the newKey as long, as we're still concerned with the password bits, do:
+                {
+                    int msb = newKey[j+round]^pass[j+round];
+                    if (msb == 1)
+                        newKey[j+round] = not(newKey[j+round]);
+                }
+            }
             round = round+key.length;
         }
         // now i have the new toggled key
@@ -129,8 +137,8 @@ public class NewEncrypter
             int j = i%8;
             if (j == 0)
             {
-                int signedBit = newKey[j]^pass[j];
-                if (signedBit == 1)
+                int msb = newKey[j]^pass[j];
+                if (msb == 1)
                     newKey[j] = not(newKey[j]);
             }
         }
@@ -159,17 +167,17 @@ public class NewEncrypter
         System.err.println(decoded);
 
         int[] passBits = encodeString(password), encodedBits=  encodeString(encoded), decodedBits = encodeString(decoded), KEYBits = encodeString(KEY);
-        // System.out.println();
-        // for (int i = 0; i < passBits.length; i++)
-        //     System.out.print(passBits[i]);
-        // System.out.println();
-        // for (int i = 0; i < encodedBits.length; i++)
-        //     System.out.print(encodedBits[i]);
-        // System.out.println();
-        // for (int i = 0; i < decodedBits.length; i++)
-        //     System.out.print(decodedBits[i]);
-        // System.out.println();
-        // for (int i = 0; i < KEYBits.length; i++)
-        //     System.out.print(KEYBits[i]);
+        System.out.println();
+        for (int i = 0; i < passBits.length; i++)
+            System.out.print(passBits[i]);
+        System.out.println();
+        for (int i = 0; i < encodedBits.length; i++)
+            System.out.print(encodedBits[i]);
+        System.out.println();
+        for (int i = 0; i < decodedBits.length; i++)
+            System.out.print(decodedBits[i]);
+        System.out.println();
+        for (int i = 0; i < KEYBits.length; i++)
+            System.out.print(KEYBits[i]);
     }
 }
