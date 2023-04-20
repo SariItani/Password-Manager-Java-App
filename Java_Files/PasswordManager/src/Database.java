@@ -24,14 +24,15 @@ public class Database {
      *                        "firefox:somepassword")
      */
     public void storetoDB(String encryptedString) {
-        appendToDataBase(encryptedString);
+        appendToDataBase(encryptPassword(encryptedString));
     }
 
     public String getPasswordFromDB(String associatedApp) {
-        return passwordsMap.get(associatedApp);
+        return NewEncrypter.decrypt(passwordsMap.get(associatedApp));
     }
 
     public HashMap<String, String> getPasswordsFromDB() {
+        // should be ok to not change
         HashMap<String, String> associationsMap = new HashMap<String, String>();
         String currStringPair[];
         try (StringIterator stringIterator = new StringIterator()) {
@@ -45,7 +46,7 @@ public class Database {
     }
 
     public void modifyPassword(String oldpassword, String newPassword) {
-        passwordsMap.replace(oldpassword, newPassword);
+        passwordsMap.replace(oldpassword, NewEncrypter.encrypt(newPassword));
         deserializePasswords();
 
     }
@@ -60,6 +61,16 @@ public class Database {
      * Code
      * Section
      */
+
+    private static String encryptPassword(String passwordPair) {
+        String split[] = passwordPair.split(":"), app = split[0], pass = split[1];
+        return app + ":" + NewEncrypter.encrypt(pass);
+    }
+
+    private static String decryptPassword(String passwordPair) {
+        // encrypting an encrypted password reverses it.
+        return encryptPassword(passwordPair);
+    }
 
     private void deserializePasswords() {
         RandomAccessFile file = getAccessFile("rw");

@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Scanner;
@@ -6,8 +8,16 @@ public class TerminalInterface {
 
     public static void main(String args[]) throws InterruptedException {
         final String END = "DQogIF9fX19fX18gXyAgICAgICAgICAgICAgICAgXyAgICAgICAgICAgICAgICAgICAgICAgICAgIF9fICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfICAgICAgICAgICAgICAgICAgXyAgIF8gDQogfF9fICAgX198IHwgICAgICAgICAgICAgICB8IHwgICAgICAgICAgICAgICAgICAgICAgICAgLyBffCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgfCAgICAgICAgICAgICAgICB8IHwgfCB8DQogICAgfCB8ICB8IHxfXyAgIF9fIF8gXyBfXyB8IHwgX18gIF8gICBfICBfX18gIF8gICBfICB8IHxfIF9fXyAgXyBfXyAgIF8gICBfICBfX18gIF8gICBfIF8gX18gIHwgfF8gXyBfXyBfICAgXyBfX198IHxffCB8DQogICAgfCB8ICB8ICdfIFwgLyBfYCB8ICdfIFx8IHwvIC8gfCB8IHwgfC8gXyBcfCB8IHwgfCB8ICBfLyBfIFx8ICdfX3wgfCB8IHwgfC8gXyBcfCB8IHwgfCAnX198IHwgX198ICdfX3wgfCB8IC8gX198IF9ffCB8DQogICAgfCB8ICB8IHwgfCB8IChffCB8IHwgfCB8ICAgPCAgfCB8X3wgfCAoXykgfCB8X3wgfCB8IHx8IChfKSB8IHwgICAgfCB8X3wgfCAoXykgfCB8X3wgfCB8ICAgIHwgfF98IHwgIHwgfF98IFxfXyBcIHxffF98DQogICAgfF98ICB8X3wgfF98XF9fLF98X3wgfF98X3xcX1wgIFxfXywgfFxfX18vIFxfXyxffCB8X3wgXF9fXy98X3wgICAgIFxfXywgfFxfX18vIFxfXyxffF98ICAgICBcX198X3wgICBcX18sX3xfX18vXF9fKF8pDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfXy8gfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfXy8gfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHxfX18vICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHxfX18vICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQo=";
-        // startupSequence();
-        // sami part:
+
+        // make lock file to check if the startup sequence has already been started
+        File tempFile = new File(".lock");
+        if (!tempFile.isFile())
+            startupSequence();
+        try {
+            tempFile.createNewFile();
+        } catch (IOException e) {
+            System.out.println("Couldn't make lock file");
+        }
         String Options[] = { "New Password", "Get Specific Password", "Modify Password", "Delete Password",
                 "List All Passwords", "Exit Program" };
         Database DB = new Database();
@@ -48,7 +58,7 @@ public class TerminalInterface {
                 // Copy to Clipboard
                 case 1: {
                     passwordSelectionMenu.setPrompt("Which password do you want to copy?:\n\n");
-                    TerminalUtils.setClipboard(getOptionsFromMenu(DB, passwordSelectionMenu));
+                    TerminalUtils.setClipboard((DB.getPasswordFromDB(passwordsArr[passwordSelectionMenu.run()])));
                     System.out.println(TerminalUtils.styleString("Copied to clipboard 🗸",
                             TerminalUtils.Styles.GREEN + TerminalUtils.Styles.UNDERLINE));
                     Thread.sleep(1500);
@@ -78,7 +88,7 @@ public class TerminalInterface {
                     System.out.println("Your stored passwords are:");
                     for (int i = 0; i < passwordsArr.length; i++) {
                         System.out.println(TerminalUtils.styleString(
-                                passwordsArr[i] + " : " + DB.passwordsMap.get(passwordsArr[i]),
+                                passwordsArr[i] + " : " + DB.getPasswordFromDB(passwordsArr[i]),
                                 TerminalUtils.Styles.UNDERLINE
                                         + TerminalUtils.Styles.BLUE));
                         //
@@ -101,12 +111,6 @@ public class TerminalInterface {
 
     private static String getFromBase64(String asciiString) {
         return new String(Base64.getDecoder().decode(asciiString));
-    }
-
-    private static String getOptionsFromMenu(Database DB, SelectionMenu menu) {
-        String[] passwordsArr = Arrays.copyOf(DB.passwordsMap.keySet().toArray(),
-                DB.passwordsMap.keySet().toArray().length, String[].class);
-        return DB.passwordsMap.get(passwordsArr[menu.run()]);
     }
 
     private static void startupSequence() {
