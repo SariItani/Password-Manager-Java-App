@@ -2,6 +2,8 @@
   "java.project.referencedLibraries": [
     "lib/**/*.jar",
     "/home/mohammad/Downloads/jna-platform-5.13.0.jar",
-    "/home/mohammad/Downloads/jna-5.13.0.jar"
+    "/home/mohammad/Downloads/jna-5.13.0.jar",
+    "/home/sari-itani/Desktop/Uni/Spring 2023/OOP/Lab/project files/jna-5.13.0.jar",
+    "/home/sari-itani/Desktop/Uni/Spring 2023/OOP/Lab/project files/jna-platform-5.13.0.jar"
   ]
 }
