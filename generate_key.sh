@@ -1,5 +1,7 @@
 #!/bin/sh
-FILE="./Java_Files/PasswordManager/src/NewEncrypter.java"
+
+DIR=Password-Manager-Java-App
+FILE="$DIR/Java_Files/PasswordManager/src/NewEncrypter.java"
 line=$(cat $FILE |  grep -n "private static final String KEY" | cut -d " " -f 1 | sed "s/://")
 PATTERN='"\(.*\)"'
 
