@@ -42,7 +42,7 @@ public class SelectionMenu {
     public int run() {
         while (true) {
             // Print out the menu options
-            System.out.print(TerminalUtils.Styles.CLEAR); // clear the console
+            System.out.print("\033c"); // clear the console
             System.out.println(prompt + "(press enter to exit menu and confirm selection)");
             System.out.println("To navigate the menu, use the up and down arrow keys\n\n");
             for (int i = 0; i < options.length; i++) {
