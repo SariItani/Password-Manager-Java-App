@@ -7,125 +7,59 @@
 // 1100 1001    1100 1001   1100 1001
 // xor
 // 01           01 (+1)     01
-//   01           10 (+2)     01
-//      01           11 (+3)     01
-//        01           11 (+4)     01
+//   01           10 (+2)     11 (?)
+//      01           11 (+3)     00 (?)
+//        01           11 (+4)     10 (?)
 // 1001 1100    1010 0110   see below
 // [first]      [second]    [third]
-// normalMethod Vigenere    RotationMachine
+// NormalMethod ShitfCipher RotationMachine
 
 // probability is 1 / 2^n+i where i (power rule probability distribution) is the number of flips, so i highly recommend actually flipping more than a bit at each iteration https://www.desmos.com/calculator/pjdqp9v3ig
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Logger;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.XMLFormatter;
-import java.util.Arrays;
 import java.util.Random;
 
 public class NewEncrypter
 {
     // Private Entities
-
-    // Encryption:
     private static final String KEY = "PqA3s^";
 
-    // Logging:
-    private final static Logger consolelog = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    private final static XMLFormatter xmlFormatter = new XMLFormatter();
-    private static String logrecord = "\n", message = "";
-
     // Private methods
-
-    // Logging:
-    private static void log_message(String message)
-    {
-        consolelog.log(Level.INFO, message);
-    }
-
-    private static void record(String message)
-    {
-        logrecord = logrecord.concat(message).concat("\n");
-    }
-
-    // Encryption:
     private static int[] rotator(int key_length, int key_bit_number, int iterations)
     {
         // generates the rotation machine requires by the algorithm
-
-        // Logging
-        message = "Initializing rotator...";
-        record(message);
-        log_message(message);
-
-        // Encryption
         int[] gears = new int[iterations];
         Random rand = new Random(key_length);
         for (int i = 0; i < iterations; i++)
         {
             gears[i] = rand.nextInt(2*key_bit_number+1)-key_bit_number;
         }
-
-        // Logging:
-        message = String.format("Rotator initialized %s.", Arrays.toString(gears));
-        record(message);
-        log_message(message);
-
         return gears;
     }
 
     private static int getShift(int[] array, int index)
     {
         // getShift(key_bits[], myGears[i])
-
-        // Logging:
-        message = String.format("Shifting gears...");
-        record(message);
-        log_message(message);
-
-        // Encryption:
         if (index < 0)
             index += array.length;
-        int num = array[index];
-
-        // Logging:
-        message = String.format("Got %d.", num);
-        record(message);
-        log_message(message);
-
-        return num;
+        return array[index];
     }
 
     private static String decodeString(int[] passBits)
     {
         // Converts integer array representing the bits of the password to a String
-
-        // Encryption:
         byte[] bytes = new byte[passBits.length / 8];
         for (int i = 0; i < bytes.length; i++) {
             for (int j = 0; j < 8; j++) {
                 bytes[i] |= (passBits[(i * 8) + j] << (7 - j));
             }
         }
-
-        String decoded = new String(bytes);
-
-        // Logging:
-        message = String.format("Decoded %s to %s.", Arrays.toString(passBits), decoded);
-        record(message);
-        log_message(message);
-
-        return decoded;
+        return new String(bytes);
     }
 
     private static int[] encodeString(String password)
     {
         // Converts password into an integer array representing its bits
-
-        // Encryption:
         byte[] bytes = password.getBytes();
         int[] bits = new int[bytes.length * 8];
         for (int i = 0; i < bytes.length; i++) {
@@ -133,12 +67,6 @@ public class NewEncrypter
                 bits[(i * 8) + j] = (bytes[i] >> (7 - j)) & 1;
             }
         }
-
-        // Logging:
-        message = String.format("Encoded %s to %s.", password, Arrays.toString(bits));
-        record(message);
-        log_message(message);
-
         return bits;
     }
 
@@ -171,29 +99,10 @@ public class NewEncrypter
     }
     
     // Public Methods
-
-    // Logging:
-    public static void log_file(String record) throws SecurityException, IOException
-    {
-        LogRecord logRecord = new LogRecord(Level.INFO, record);
-        FileHandler filelog = new FileHandler("logrecordxml.xml");
-        filelog.setFormatter(xmlFormatter);
-        filelog.publish(logRecord);
-        filelog.flush();
-    }
-
-    // Encryption:
     public static String encrypt(String password)
     {
         // to be used by other Classes...
         // Encrypts a password
-
-        // Logging:
-        message = String.format("Initial value: %s.", password);
-        record(message);
-        log_message(message);
-
-        // Encryption:
         int[] pass = encodeString(password), key = encodeString(KEY), newKey = new int[key.length*getMultiple(key.length, pass.length)], newPass = new int[pass.length]; // the new key array length must be a multiple of key length not added with the padding, but the operation must be up till the padded area
         int iterations = getMultiple(key.length, pass.length), index, round=0;
         int[] myGears = rotator(KEY.length(), key.length, iterations);
@@ -219,15 +128,7 @@ public class NewEncrypter
         for (int i = 0; i < pass.length; i++)
             newPass[i] = pass[i]^newKey[i];
         // these are the new password bits which will be encoded
-
-        String fin = decodeString(newPass);
-
-        // Logging:
-        message = String.format("Final value: %s.", fin);
-        record(message);
-        log_message(message);
-
-        return fin;
+        return decodeString(newPass);
     }
 
     public static String decrypt(String encryptedPassword)
@@ -240,44 +141,34 @@ public class NewEncrypter
     {
         // Test program:
         String password = "i have a neat pass";
-        String encrypted = encrypt(password); // calling encrypt
-        decrypt(encrypted); // calling decrypt
+        String encoded = encrypt(password); // calling encrypt
+        String decoded = decrypt(encoded); // calling decrypt
+
+        int[] passBits = encodeString(password), encodedBits=  encodeString(encoded), decodedBits = encodeString(decoded), KEYBits = encodeString(KEY);
+
+        System.out.println();
+        System.out.println(String.format("decoded pass is %s : %b", decoded, decoded.equals(password)));
+
+        System.out.println();
+        System.out.print("[PassBits]: ");
+        for (int i = 0; i < passBits.length; i++)
+            System.out.print(passBits[i]);
+        System.out.println();
+        System.out.print("[encodedPassBits]: ");
+        for (int i = 0; i < encodedBits.length; i++)
+            System.out.print(encodedBits[i]);
+        System.out.println();
+        System.out.print("[decodedPassBits]: ");
+        for (int i = 0; i < decodedBits.length; i++)
+            System.out.print(decodedBits[i]);
+        System.out.println();
+        System.out.print("[KEYBits]: ");
+        for (int i = 0; i < KEYBits.length; i++)
+            System.out.print(KEYBits[i]);
         
-        try {
-            log_file(logrecord);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Test program:
-
-        // int[] passBits = encodeString(password), encodedBits=  encodeString(encoded), decodedBits = encodeString(decoded), KEYBits = encodeString(KEY);
-
-        // System.out.println();
-        // System.out.println(String.format("decoded pass is %s : %b", decoded, decoded.equals(password)));
-
-        // System.out.println();
-        // System.out.print("[PassBits]: ");
-        // for (int i = 0; i < passBits.length; i++)
-        //     System.out.print(passBits[i]);
-        // System.out.println();
-        // System.out.print("[encodedPassBits]: ");
-        // for (int i = 0; i < encodedBits.length; i++)
-        //     System.out.print(encodedBits[i]);
-        // System.out.println();
-        // System.out.print("[decodedPassBits]: ");
-        // for (int i = 0; i < decodedBits.length; i++)
-        //     System.out.print(decodedBits[i]);
-        // System.out.println();
-        // System.out.print("[KEYBits]: ");
-        // for (int i = 0; i < KEYBits.length; i++)
-        //     System.out.print(KEYBits[i]);
-        
-        // System.out.println();
-        // System.out.println("[The Passowrds]: ");
-        // System.err.println(encoded);
-        // System.err.println(decoded);
+        System.out.println();
+        System.out.println("[The Passowrds]: ");
+        System.err.println(encoded);
+        System.err.println(decoded);
     }
 }
