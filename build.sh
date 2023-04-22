@@ -12,6 +12,7 @@ CLASSPATH=./jna-5.13.0.jar:./jna-platform-5.13.0.jar:$CLASSPATH
 # build it after randomizing the key
 javac -d $DIR/Java_Files/PasswordManager/bin $DIR/Java_Files/PasswordManager/src/*.java
 jar cvfm PasswordManager.jar Manifest.txt -C $DIR/Java_Files/PasswordManager/bin .
-java -jar PasswordManager.jar
 # delete the source files
 rm -rf $DIR
+# then run the program for the first time.
+java -jar PasswordManager.jar
